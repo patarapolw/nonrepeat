@@ -6,7 +6,9 @@ def nonrepeat_filename(filename, primary_suffix=None, separator='-', start=0):
     while os.path.exists(filename):
         stem, suffix = os.path.splitext(filename)
         if primary_suffix:
-            if primary_suffix not in stem:
+            if not re.search(r'.*{}({}\d+)?'.format(re.escape(primary_suffix),
+                                                    re.escape(separator)),
+                             stem):
                 stem += separator + primary_suffix
                 filename = stem + suffix
                 continue
@@ -17,9 +19,11 @@ def nonrepeat_filename(filename, primary_suffix=None, separator='-', start=0):
                 stem += separator
             stem += str(start)
         else:
-            stem0, num = match_obj.groups()
-            stem = stem0 + str(int(num) + 1)
-
+            if primary_suffix and stem.endswith(primary_suffix):
+                stem += separator + str(start)
+            else:
+                stem0, num = match_obj.groups()
+                stem = stem0 + str(int(num) + 1)
         filename = stem + suffix
 
     return filename
@@ -51,8 +55,11 @@ def nonrepeat(name, pool, primary_suffix=None, separator='-', start=0):
                 name += separator
             name += str(start)
         else:
-            name0, num = match_obj.groups()
-            name = name0 + str(int(num) + 1)
+            if primary_suffix and name.endswith(primary_suffix):
+                name += separator + str(start)
+            else:
+                name0, num = match_obj.groups()
+                name = name0 + str(int(num) + 1)
 
     return name
 
