@@ -2,8 +2,8 @@ import re
 import os
 
 
-def nonrepeat_filename(filename, primary_suffix=None, separator='-', start=0):
-    while os.path.exists(filename):
+def nonrepeat_filename(filename, primary_suffix=None, separator='-', start=0, root=''):
+    while os.path.exists(os.path.join(root, filename)):
         stem, suffix = os.path.splitext(filename)
         if primary_suffix:
             if not re.search(r'.*{}({}\d+)?'.format(re.escape(primary_suffix),
